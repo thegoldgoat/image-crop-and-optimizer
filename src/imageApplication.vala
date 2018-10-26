@@ -46,24 +46,37 @@ public class imageApplication : Gtk.Application {
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, -1);
 
         Gtk.Box hBoxWidth = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 20);
+        Gtk.Box hBoxSize = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 20);
 
-        Gtk.Label label = new Gtk.Label("Image Witdh:");
-        Gtk.SpinButton spinButton = new Gtk.SpinButton.with_range (0, 10000, 1);
-        spinButton.set_value(800.0);
+        // Width elements
+        Gtk.Label labelWidth = new Gtk.Label("Image Witdh:");
+        Gtk.SpinButton spinButtonWidth = new Gtk.SpinButton.with_range (0, 10000, 1);
+        spinButtonWidth.set_value(800.0);
+
+        // Size elements
+        Gtk.Label labelSize = new Gtk.Label("Image Maximum size (Kb):");
+        Gtk.SpinButton spinButtonSize = new Gtk.SpinButton.with_range (0, 100000, 1);
+        spinButtonSize.set_value(25.0);
         
+        // Drop element
         this.dropHere = new Gtk.Label("Drop image here");
         
-        // Box adds
-        hBoxWidth.pack_start(label, true, true, 0);
-        hBoxWidth.pack_start(spinButton, true, true, 0);
+        // Box adds:
+        // * Width
+        hBoxWidth.pack_start(labelWidth, true, true, 0);
+        hBoxWidth.pack_start(spinButtonWidth, true, true, 0);
+        // * Size
+        hBoxSize.pack_start(labelSize, true, true, 0);
+        hBoxSize.pack_start(spinButtonSize, true, true, 0);
+        // * vbox
         vbox.add(hBoxWidth);
+        vbox.add(hBoxSize);
         vbox.pack_start(this.dropHere, true, true, 0);
-
 
         //connect drag drop handlers
         Gtk.drag_dest_set (window,Gtk.DestDefaults.ALL, targets, Gdk.DragAction.COPY);
         // When the file is dropped
-        this.dropHere.drag_data_received.connect(this.on_drag_data_received);
+        this.window.drag_data_received.connect(this.on_drag_data_received);
 
         // Add the box
         this.window.add(vbox);
