@@ -34,7 +34,8 @@ public class imageApplication : Gtk.Application {
     }
 
     private Gtk.Image image;
-    Gtk.ApplicationWindow window;
+    private Gtk.ApplicationWindow window;
+    private Gtk.Label dropHere;
 
     protected override void activate () {
         // The main window with its title and size
@@ -42,17 +43,35 @@ public class imageApplication : Gtk.Application {
         window.title = "Image Compressor";
         window.set_default_size (500, 500);
 
+        Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, -1);
+
+        Gtk.Box hBoxWidth = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 20);
+
+        Gtk.Label label = new Gtk.Label("Image Witdh:");
+        Gtk.SpinButton spinButton = new Gtk.SpinButton.with_range (0, 10000, 1);
+        spinButton.set_value(800.0);
         
+        this.dropHere = new Gtk.Label("Drop image here");
         
+        // Box adds
+        hBoxWidth.pack_start(label, true, true, 0);
+        hBoxWidth.pack_start(spinButton, true, true, 0);
+        vbox.add(hBoxWidth);
+        vbox.pack_start(this.dropHere, true, true, 0);
+
+
         //connect drag drop handlers
         Gtk.drag_dest_set (window,Gtk.DestDefaults.ALL, targets, Gdk.DragAction.COPY);
-        this.window.drag_data_received.connect(this.on_drag_data_received);
+        // When the file is dropped
+        this.dropHere.drag_data_received.connect(this.on_drag_data_received);
+
+        // Add the box
+        this.window.add(vbox);
         this.window.show_all ();
     }
 
-    private void on_drag_data_received (Gdk.DragContext drag_context, int x, int y, 
-                                         Gtk.SelectionData data, uint info, uint time) 
-    {
+    private void on_drag_data_received (Gdk.DragContext drag_context, int x, int y,
+                                         Gtk.SelectionData data, uint info, uint time) {
         //loop through list of URIs
         foreach(string uri in data.get_uris ()){
             string file = uri.replace("file://","").replace("file:/","");
