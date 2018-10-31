@@ -21,6 +21,7 @@
 
 
 using Gtk;
+using Posix;
 
 public class imageApplication : Gtk.Application {
 
@@ -36,6 +37,7 @@ public class imageApplication : Gtk.Application {
     private Gtk.Image image;
     private Gtk.ApplicationWindow window;
     private Gtk.Label dropHere;
+    private string output_path = "/tmp/prova.jpg";
 
     protected override void activate () {
         // The main window with its title and size
@@ -87,12 +89,14 @@ public class imageApplication : Gtk.Application {
                                          Gtk.SelectionData data, uint info, uint time) {
         //loop through list of URIs
         foreach(string uri in data.get_uris ()){
-            string file = uri.replace("file://","").replace("file:/","");
+            string file = uri.replace("file://","").replace("file:/","").replace("%20", "\\ ");
             // If it ends with .jpg or .jpeg
             if ( file.has_suffix(".jpg") || file.has_suffix(".jpeg") ) {
-                stdout.printf("File immagine jpeg!\n");
+                Posix.stdout.printf("File immagine jpeg!\n");
+                //convert sample.jpg -define jpeg:extent=300kb -scale 800 output.jpg
+                Posix.system("convert " + file + " -define jpeg:extent=500kb -scale 800 " + this.output_path);
             }
-            stdout.printf("%s\n", file);
+            Posix.stdout.printf("%s\n", file);
         }
 
         Gtk.drag_finish (drag_context, true, false, time);
