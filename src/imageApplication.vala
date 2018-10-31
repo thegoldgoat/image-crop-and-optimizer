@@ -37,7 +37,10 @@ public class imageApplication : Gtk.Application {
     private Gtk.Image image;
     private Gtk.ApplicationWindow window;
     private Gtk.Label dropHere;
-    private string output_path = "/tmp/prova.jpg";
+    private string output_path = "~/Scrivania/";
+    private Gtk.Entry nameField;
+    private Gtk.SpinButton spinButtonSize;
+    private Gtk.SpinButton spinButtonWidth;
 
     protected override void activate () {
         // The main window with its title and size
@@ -49,30 +52,41 @@ public class imageApplication : Gtk.Application {
 
         Gtk.Box hBoxWidth = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 20);
         Gtk.Box hBoxSize = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 20);
+        Gtk.Box hBoxName = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 20);
 
         // Width elements
         Gtk.Label labelWidth = new Gtk.Label("Image Witdh:");
-        Gtk.SpinButton spinButtonWidth = new Gtk.SpinButton.with_range (0, 10000, 1);
-        spinButtonWidth.set_value(800.0);
+        this.spinButtonWidth = new Gtk.SpinButton.with_range (0, 10000, 1);
+        this.spinButtonWidth.set_value(800.0);
 
         // Size elements
         Gtk.Label labelSize = new Gtk.Label("Image Maximum size (Kb):");
-        Gtk.SpinButton spinButtonSize = new Gtk.SpinButton.with_range (0, 100000, 1);
-        spinButtonSize.set_value(25.0);
+        this.spinButtonSize = new Gtk.SpinButton.with_range (0, 100000, 1);
+        this.spinButtonSize.set_value(25.0);
         
+        // Output Name box
+        Gtk.Label labelName = new Gtk.Label("Image Output name:");
+        this.nameField = new Gtk.Entry();
+        this.nameField.set_text("output.jpg");
+
         // Drop element
         this.dropHere = new Gtk.Label("Drop image here");
         
         // Box adds:
         // * Width
         hBoxWidth.pack_start(labelWidth, true, true, 0);
-        hBoxWidth.pack_start(spinButtonWidth, true, true, 0);
+        hBoxWidth.pack_start(this.spinButtonWidth, true, true, 0);
         // * Size
         hBoxSize.pack_start(labelSize, true, true, 0);
-        hBoxSize.pack_start(spinButtonSize, true, true, 0);
+        hBoxSize.pack_start(this.spinButtonSize, true, true, 0);
+        // * Output Name
+        hBoxName.pack_start(labelName, true, true, 0);
+        hBoxName.pack_start(this.nameField, true, true, 0);
+
         // * vbox
         vbox.add(hBoxWidth);
         vbox.add(hBoxSize);
+        vbox.add(hBoxName);
         vbox.pack_start(this.dropHere, true, true, 0);
 
         //connect drag drop handlers
@@ -90,11 +104,14 @@ public class imageApplication : Gtk.Application {
         //loop through list of URIs
         foreach(string uri in data.get_uris ()){
             string file = uri.replace("file://","").replace("file:/","").replace("%20", "\\ ");
-            // If it ends with .jpg or .jpeg
-            if ( file.has_suffix(".jpg") || file.has_suffix(".jpeg") ) {
+            // Get just the images
+            if ( file.has_suffix(".jpg") || file.has_suffix(".jpeg") || file.has_suffix(".png")) {
                 Posix.stdout.printf("File immagine jpeg!\n");
                 //convert sample.jpg -define jpeg:extent=300kb -scale 800 output.jpg
-                Posix.system("convert " + file + " -define jpeg:extent=500kb -scale 800 " + this.output_path);
+                string out_file = this.output_path + this.nameField.get_text();
+                Posix.system("convert " + file + " -define jpeg:extent=" +
+                                this.spinButtonSize.get_value_as_int().to_string() +
+                                "kb -scale " + this.spinButtonWidth.get_value_as_int().to_string() + " " + out_file);
             }
             Posix.stdout.printf("%s\n", file);
         }
