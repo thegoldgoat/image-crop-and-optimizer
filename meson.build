@@ -1,5 +1,7 @@
 # project name and programming language
-project('com.github.thegoldgoat.image-crop-and-optimizer', 'vala', 'c')
+project('com.github.thegoldgoat.image-compressor-and-scaler', 'vala', 'c')
+
+configuration_data().set('version', '1.0.0')
 
 # Create a new executable, list the files we want to compile, list the dependencies we need, and install
 executable(

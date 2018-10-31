@@ -34,7 +34,6 @@ public class imageApplication : Gtk.Application {
         flags: ApplicationFlags.FLAGS_NONE);
     }
 
-    private Gtk.Image image;
     private Gtk.ApplicationWindow window;
     private Gtk.Label dropHere;
     private string output_path = "~/Scrivania/";
@@ -62,7 +61,7 @@ public class imageApplication : Gtk.Application {
         // Size elements
         Gtk.Label labelSize = new Gtk.Label("Image Maximum size (Kb):");
         this.spinButtonSize = new Gtk.SpinButton.with_range (0, 100000, 1);
-        this.spinButtonSize.set_value(25.0);
+        this.spinButtonSize.set_value(500.0);
         
         // Output Name box
         Gtk.Label labelName = new Gtk.Label("Image Output name:");
